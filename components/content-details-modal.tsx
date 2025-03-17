@@ -1,20 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, Play, Star, Calendar, Clock, Tag, Plus, ThumbsUp, Share2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { VideoPlayer } from "./video-player"
+import { Content } from "@/types/content"
 
-interface Content {
-  id: string
-  title: string
-  image: string
-  rating: number
-  year: number
-  category: string
-  description: string
-}
 
 interface ContentDetailsModalProps {
   content: Content | null
@@ -24,14 +16,70 @@ interface ContentDetailsModalProps {
 
 export function ContentDetailsModal({ content, isOpen, onClose }: ContentDetailsModalProps) {
   const [showPlayer, setShowPlayer] = useState(false)
-
-  if (!content) return null
+  const [localDescription, setLocalDescription] = useState("")
 
   // Dados adicionais fictícios para o modal
   const duration = "2h 15min"
   const director = "Christopher Nolan"
   const cast = ["Leonardo DiCaprio", "Ellen Page", "Joseph Gordon-Levitt"]
   const genres = ["Ação", "Ficção Científica", "Thriller"]
+
+  // Reinicia os estados quando o modal abre com novo conteúdo
+  useEffect(() => {
+    if (isOpen && content) {
+      console.log("Modal aberto para:", content.title)
+      setShowPlayer(false)
+      setLocalDescription(content.description)
+      if (content.description.trim() === "Descrição Genérica") {
+        if (!content.title) {
+          console.error("Content title is undefined:", content)
+          return
+        }
+        console.log("Fetching sinopse para:", content.title)
+        async function fetchDescription() {
+          try {
+            const token = localStorage.getItem("token")
+            const url = `https://api.streamhivex.icu/api/sinopse?nome=${encodeURIComponent(content.title)}`
+            console.log("URL da requisição sinopse:", url)
+            const res = await fetch(url, {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+              }
+            })
+            const data = await res.json()
+            console.log("Resposta da API sinopse:", data)
+            if (data.sinopse) {
+              setLocalDescription(data.sinopse)
+            } else {
+              console.log("A propriedade 'sinopse' não foi encontrada na resposta.")
+            }
+          } catch (error) {
+            console.error("Erro ao buscar sinopse:", error)
+          }
+        }
+        fetchDescription()
+      }
+    }
+  }, [isOpen, content])
+
+  // Reseta os estados quando o modal fecha
+  useEffect(() => {
+    if (!isOpen) {
+      console.log("Modal fechado. Resetando estados.")
+      setShowPlayer(false)
+      setLocalDescription("")
+    }
+  }, [isOpen])
+
+  // Log quando o VideoPlayer é ativado
+  useEffect(() => {
+    if (showPlayer) {
+      console.log("VideoPlayer ativado com videoUrl:", content?.videoUrl)
+    }
+  }, [showPlayer, content])
+
+  if (!content) return null
 
   return (
     <AnimatePresence>
@@ -54,9 +102,8 @@ export function ContentDetailsModal({ content, isOpen, onClose }: ContentDetails
                 <X className="h-5 w-5" />
               </Button>
             </div>
-
             {showPlayer ? (
-              <VideoPlayer onClose={() => setShowPlayer(false)} />
+              <VideoPlayer onClose={() => setShowPlayer(false)} videoUrl={content.videoUrl} contentId={content.originalId || content.id} />
             ) : (
               <>
                 <div className="relative w-full h-[40vh] md:h-[50vh]">
@@ -86,43 +133,34 @@ export function ContentDetailsModal({ content, isOpen, onClose }: ContentDetails
                         {content.category}
                       </span>
                     </div>
-
                     <div className="flex flex-wrap gap-3">
                       <Button
                         className="bg-white text-black hover:bg-gray-200 rounded-full px-8"
-                        onClick={() => setShowPlayer(true)}
+                        onClick={() => {
+                          console.log("Clicou para assistir, videoUrl:", content.videoUrl)
+                          setShowPlayer(true)
+                        }}
                       >
                         <Play className="mr-2 h-4 w-4 fill-black" /> Assistir
                       </Button>
-
                       <Button variant="outline" className="border-gray-700 text-white hover:bg-gray-800 rounded-full">
                         <Plus className="mr-2 h-4 w-4" /> Minha Lista
                       </Button>
-
                       <Button variant="ghost" size="icon" className="rounded-full bg-gray-800/50 hover:bg-gray-700/50">
                         <ThumbsUp className="h-5 w-5" />
                       </Button>
-
                       <Button variant="ghost" size="icon" className="rounded-full bg-gray-800/50 hover:bg-gray-700/50">
                         <Share2 className="h-5 w-5" />
                       </Button>
                     </div>
                   </div>
                 </div>
-
                 <div className="p-6 md:p-8 grid md:grid-cols-3 gap-8">
                   <div className="md:col-span-2 space-y-6">
                     <div>
                       <h3 className="text-xl font-bold mb-3">Sinopse</h3>
-                      <p className="text-gray-300 leading-relaxed">
-                        {content.description}
-                        {/* Texto adicional para demonstração */} Lorem ipsum dolor sit amet, consectetur adipiscing
-                        elit. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eget aliquam nisl nisl
-                        sit amet nisl. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eget aliquam
-                        nisl nisl sit amet nisl.
-                      </p>
+                      <p className="text-gray-300 leading-relaxed">{localDescription}</p>
                     </div>
-
                     <div>
                       <h3 className="text-xl font-bold mb-3">Elenco</h3>
                       <div className="flex flex-wrap gap-2">
@@ -134,13 +172,11 @@ export function ContentDetailsModal({ content, isOpen, onClose }: ContentDetails
                       </div>
                     </div>
                   </div>
-
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-bold mb-2">Diretor</h3>
                       <p className="text-gray-300">{director}</p>
                     </div>
-
                     <div>
                       <h3 className="text-lg font-bold mb-2">Gêneros</h3>
                       <div className="flex flex-wrap gap-2">
@@ -151,7 +187,6 @@ export function ContentDetailsModal({ content, isOpen, onClose }: ContentDetails
                         ))}
                       </div>
                     </div>
-
                     <div>
                       <h3 className="text-lg font-bold mb-2">Disponível em</h3>
                       <div className="flex gap-2">
@@ -173,4 +208,3 @@ export function ContentDetailsModal({ content, isOpen, onClose }: ContentDetails
     </AnimatePresence>
   )
 }
-

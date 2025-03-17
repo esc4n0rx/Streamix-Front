@@ -3,16 +3,7 @@
 import { motion } from "framer-motion"
 import { Play, Star, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-
-interface Content {
-  id: string
-  title: string
-  image: string
-  rating: number
-  year: number
-  category: string
-  description: string
-}
+import { Content } from "@/types/content"
 
 interface ContentCardProps {
   content: Content
@@ -33,16 +24,13 @@ export function ContentCard({ content, index, onClick }: ContentCardProps) {
     >
       <div className="relative overflow-hidden rounded-lg">
         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-80 transition-opacity duration-300 z-10"></div>
-
         <img
           src={content.image || "/placeholder.svg"}
           alt={content.title}
           className="w-full h-auto aspect-[2/3] object-cover transition-transform duration-500 group-hover:scale-110"
         />
-
         <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20">
           <h3 className="text-sm font-bold mb-1 line-clamp-1">{content.title}</h3>
-
           <div className="flex items-center space-x-2 mb-2">
             <span className="flex items-center text-yellow-500 text-xs">
               <Star className="h-3 w-3 fill-yellow-500 mr-0.5" />
@@ -50,9 +38,7 @@ export function ContentCard({ content, index, onClick }: ContentCardProps) {
             </span>
             <span className="text-xs">{content.year}</span>
           </div>
-
           <p className="text-xs text-gray-300 mb-3 line-clamp-2">{content.description}</p>
-
           <div className="flex space-x-2">
             <Button
               size="sm"
@@ -64,7 +50,6 @@ export function ContentCard({ content, index, onClick }: ContentCardProps) {
             >
               <Play className="mr-1 h-3 w-3 fill-black" /> Assistir
             </Button>
-
             <Button
               size="icon"
               variant="ghost"
@@ -76,7 +61,6 @@ export function ContentCard({ content, index, onClick }: ContentCardProps) {
           </div>
         </div>
       </div>
-
       <div className="mt-2">
         <h3 className="text-sm font-medium line-clamp-1 group-hover:text-purple-400 transition-colors">
           {content.title}
@@ -85,4 +69,3 @@ export function ContentCard({ content, index, onClick }: ContentCardProps) {
     </motion.div>
   )
 }
-

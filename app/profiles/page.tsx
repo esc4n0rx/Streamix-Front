@@ -345,7 +345,7 @@ export default function ProfilesPage() {
                 <div className="flex items-center space-x-4">
                   <div className="w-16 h-16">
                     <img
-                      src={`https://api.streamhivex.icu/assets/perfil/${selectedAvatar || "default.png"}`}
+                      src={`https://api.streamhivex.icu/assets/perfil/${selectedAvatar || "/assets/perfil/default.png"}`}
                       alt="Avatar Selecionado"
                       className="w-full h-full object-cover rounded"
                     />

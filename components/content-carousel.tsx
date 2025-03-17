@@ -4,16 +4,7 @@ import { useRef } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ContentCard } from "@/components/content-card"
-
-interface Content {
-  id: string
-  title: string
-  image: string
-  rating: number
-  year: number
-  category: string
-  description: string
-}
+import { Content } from "@/types/content"
 
 interface ContentCarouselProps {
   contents: Content[]
