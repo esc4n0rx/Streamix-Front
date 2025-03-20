@@ -72,12 +72,29 @@ export function ContentDetailsModal({ content, isOpen, onClose }: ContentDetails
     }
   }, [isOpen])
 
+
+  const getVideoUrl = (): string => {
+    if (!content) return "";
+    let url = content.videoUrl;
+    const isYT = url.includes("youtube.com") || url.includes("youtu.be");
+    
+    // If not YouTube and URL is HTTP or HTTPS, use the proxy
+    if (!isYT && (url.startsWith("http://") || url.startsWith("https://"))) {
+      console.log("Original URL:", url);
+      url = `https://api.streamhivex.icu/api/proxy?url=${encodeURIComponent(url)}`;
+      console.log("Proxy URL:", url);
+    }
+    
+    return url;
+  };
+  
+
   // Log quando o VideoPlayer é ativado
   useEffect(() => {
     if (showPlayer) {
-      console.log("VideoPlayer ativado com videoUrl:", content?.videoUrl)
+      console.log("VideoPlayer ativado com videoUrl:", getVideoUrl());
     }
-  }, [showPlayer, content])
+  }, [showPlayer, content]);
 
   if (!content) return null
 
@@ -103,7 +120,7 @@ export function ContentDetailsModal({ content, isOpen, onClose }: ContentDetails
               </Button>
             </div>
             {showPlayer ? (
-              <VideoPlayer onClose={() => setShowPlayer(false)} videoUrl={content.videoUrl} contentId={content.originalId || content.id} />
+              <VideoPlayer onClose={() => setShowPlayer(false)} videoUrl={getVideoUrl()} contentId={content.originalId || content.id} />
             ) : (
               <>
                 <div className="relative w-full h-[40vh] md:h-[50vh]">

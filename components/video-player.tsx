@@ -351,8 +351,6 @@ export function VideoPlayer({
 
   const handleChangeQuality = (newQuality: string) => {
     setQuality(newQuality)
-    // Normalmente, aqui você implementaria a lógica para mudar a qualidade
-    // através de uma API de streaming adaptativo como HLS ou DASH
   }
 
   const handleChangeSpeed = (newSpeed: number) => {
@@ -405,7 +403,6 @@ export function VideoPlayer({
 
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite)
-    // Implementar lógica para salvar nos favoritos
   }
 
   return (
@@ -425,6 +422,10 @@ export function VideoPlayer({
         className="w-full h-full object-contain" 
         onClick={togglePlay} 
         autoPlay
+        onError={(e) => {
+          console.error("Erro ao reproduzir vídeo:", e);
+          console.error("Detalhes do erro:", e.currentTarget.error);
+        }}
         playsInline
         />
         
