@@ -49,6 +49,7 @@ export default function LoginModal({ isOpen, onClose, activeTab, setActiveTab }:
       const data = await response.json()
       // Supondo que o token retorne em data.token
       localStorage.setItem("token", data.token)
+      console.log("Token:", data.token)
       onClose()
       router.push("/profiles")
     } catch (error) {
