@@ -1,5 +1,4 @@
 "use client"
-
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
@@ -12,24 +11,23 @@ interface GenreCardProps {
 export function GenreCard({ name, isSelected, onClick }: GenreCardProps) {
   return (
     <motion.div
-      className={cn(
-        "relative cursor-pointer rounded-lg overflow-hidden",
-        "transition-all duration-300"
-      )}
       whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.98 }}
+      whileTap={{ scale: 0.95 }}
+      className={cn(
+        "relative cursor-pointer rounded-lg overflow-hidden aspect-video",
+        isSelected ? "ring-2 ring-purple-500 ring-offset-2 ring-offset-[#0a0a1a]" : ""
+      )}
       onClick={onClick}
     >
       <div 
         className={cn(
-          "flex items-center justify-center h-24 w-full bg-gray-900/80 border border-gray-800",
-          "transition-all duration-300",
+          "absolute inset-0 flex items-center justify-center p-2 text-center font-medium",
           isSelected 
-            ? "border-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.3)]" 
-            : "hover:border-yellow-500/50 hover:shadow-[0_0_15px_rgba(234,179,8,0.2)]"
+            ? "bg-gradient-to-r from-pink-500 to-purple-600 text-white" 
+            : "bg-gray-900/80 text-gray-300 hover:bg-gray-800/90 hover:text-white"
         )}
       >
-        <span className="text-lg font-bold">{name}</span>
+        {name}
       </div>
     </motion.div>
   )

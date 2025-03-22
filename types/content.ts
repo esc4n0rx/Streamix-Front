@@ -9,4 +9,6 @@ export interface Content {
   category: string;
   description: string;
   videoUrl: string;
+  duration?: number;
+  genres?: string[];
 }
